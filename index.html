@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KodNest Premium Build System</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="brand">KodNest Premium</div>
+            <div class="progress-indicator">Step 2 / 5</div>
+            <div class="status-badge">In Progress</div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- Context Header -->
+            <section class="context-header">
+                <h1>Review System Architecture</h1>
+                <p>Verify the proposed database schema and API endpoints before proceeding to the build phase. Ensure all data relationships are correctly defined.</p>
+            </section>
+
+            <!-- Workspace Wrapper -->
+            <div class="workspace-wrapper">
+                
+                <!-- Primary Workspace (70%) -->
+                <div class="primary-workspace">
+                    
+                    <div class="card">
+                        <div class="card-header">Database Schema</div>
+                        <p style="margin-bottom: 24px;">The following schema defines the core user and project tables. Please review the relationships carefully.</p>
+                        
+                        <!-- Example Input Group within Card -->
+                        <div class="input-group">
+                            <label class="input-label" for="schema-name">Schema Name</label>
+                            <input type="text" id="schema-name" class="input-field" value="v1_production_schema" readonly>
+                        </div>
+                        
+                         <div class="input-group">
+                            <label class="input-label" for="schema-desc">Description</label>
+                            <textarea id="schema-desc" class="input-field" rows="3">Standard user authentication and project management schema with cascade delete enabled.</textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+                         <div class="card-header">API Endpoints</div>
+                         <p>GET /api/v1/projects</p>
+                         <p>POST /api/v1/projects</p>
+                         <p>GET /api/v1/projects/:id</p>
+                    </div>
+
+                </div>
+
+                <!-- Secondary Panel (30%) -->
+                <aside class="secondary-panel">
+                    
+                    <div style="font-weight: 600; font-size: 0.9rem;">Next Action</div>
+                    <p style="font-size: 0.9rem; color: var(--color-text-secondary);">Copy the prompt below to generate the migration files.</p>
+                    
+                    <div class="prompt-box">
+                        /generate migration name=create_users fields=name:string,email:string:unique
+                    </div>
+
+                    <div class="btn-block">
+                        <button class="btn btn-secondary" style="flex: 1; margin-right: 8px;">Copy</button>
+                        <button class="btn btn-primary" style="flex: 1;">Build in Lovable</button>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--color-border); margin: 16px 0;"></div>
+
+                    <button class="btn btn-secondary" style="justify-content: flex-start; gap: 8px;">
+                        <span>📷</span> Add Screenshot
+                    </button>
+                     <button class="btn btn-secondary" style="justify-content: flex-start; gap: 8px; color: var(--color-error); border-color: var(--color-error-bg);">
+                        <span>⚠️</span> Report Error
+                    </button>
+
+                </aside>
+
+            </div>
+
+        </main>
+
+        <!-- Proof Footer -->
+        <footer class="proof-footer">
+            <div style="font-weight: 600; font-size: 0.9rem;">Proof of Work</div>
+            
+            <div class="proof-checklist">
+                <label class="proof-item">
+                    <input type="checkbox"> UI Built
+                </label>
+                <label class="proof-item">
+                    <input type="checkbox" checked> Logic Working
+                </label>
+                <label class="proof-item">
+                    <input type="checkbox"> Test Passed
+                </label>
+                <label class="proof-item">
+                    <input type="checkbox"> Deployed
+                </label>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

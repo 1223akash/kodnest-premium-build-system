@@ -1,0 +1,49 @@
+/*
+  KodNest Premium Build System
+  ----------------------------
+  Design Philosophy: Calm, Intentional, Coherent
+  Colors:
+   - Background: #F7F6F3 (off-white)
+   - Primary Text: #111111
+   - Accent: #8B0000 (deep red)
+   - Success: #2E5C38 (muted green)
+   - Warning: #946C00 (muted amber)
+*/
+
+:root {
+  /* Colors */
+  --color-background: #F7F6F3;
+  --color-text-primary: #111111;
+  --color-text-secondary: #444444;
+  --color-accent: #8B0000;
+  --color-accent-hover: #660000; /* Darker red for hover */
+  --color-border: #E0E0E0;
+  --color-surface: #FFFFFF;
+
+  --color-success: #2E5C38;
+  --color-success-bg: #E8F5E9;
+  --color-warning: #946C00;
+  --color-warning-bg: #FFF8E1;
+  --color-error: #B00020;
+  --color-error-bg: #FBE9E7;
+
+  /* Spacing Scale - 8px based */
+  --spacing-1: 8px;
+  --spacing-2: 16px;
+  --spacing-3: 24px;
+  --spacing-4: 32px;
+  --spacing-5: 40px;
+  --spacing-6: 48px;
+  --spacing-8: 64px;
+
+  /* Typography */
+  --font-heading: 'Merriweather', serif; /* Or similar strict serif */
+  --font-body: 'Inter', sans-serif; /* Clean sans-serif */
+
+  /* Global Layout */
+  --top-bar-height: 64px;
+  --footer-height: 80px; /* Approximately */
+  --border-radius: 4px; /* Subtle radius */
+  --transition-speed: 200ms;
+  --transition-ease: ease-in-out;
+}

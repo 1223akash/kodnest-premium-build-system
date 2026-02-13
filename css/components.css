@@ -1,0 +1,111 @@
+/* Components */
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    /* Generous padding */
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) var(--transition-ease);
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    /* Extremely subtle */
+    border-color: var(--color-text-secondary);
+}
+
+.btn-block {
+    display: flex;
+    width: 100%;
+}
+
+/* Inputs & Textareas */
+.input-group {
+    margin-bottom: var(--spacing-3);
+}
+
+.input-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-1);
+    color: var(--color-text-secondary);
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    outline: none;
+    font-size: 1rem;
+    transition: border-color var(--transition-speed) var(--transition-ease);
+}
+
+.input-field:focus {
+    border-color: var(--color-text-primary);
+    /* High contrast focus */
+}
+
+.input-field::placeholder {
+    color: #999;
+}
+
+/* Cards */
+.card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-3);
+}
+
+.card-header {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Prompt Box (Secondary Panel) */
+.prompt-box {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius);
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+    user-select: all;
+    /* Easy copy */
+}

@@ -1,0 +1,139 @@
+/* Global Layout Structure */
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Top Bar */
+.top-bar {
+    height: var(--top-bar-height);
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-4);
+    flex-shrink: 0;
+}
+
+.brand {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.progress-indicator {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    /* Pill shape */
+    background-color: var(--color-background);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Stack Context Header + Workspace/Panel */
+    overflow: hidden;
+    /* Scroll inside workspace if needed */
+}
+
+/* Context Header */
+.context-header {
+    padding: var(--spacing-4) var(--spacing-5);
+    background-color: var(--color-background);
+    /* Seamless with body */
+    /* border-bottom: 1px solid var(--color-border); Optional, keeps it clean without */
+}
+
+.context-header h1 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-1);
+    color: var(--color-text-primary);
+}
+
+.context-header p {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    max-width: 800px;
+}
+
+/* Workspace Wrapper (Split View) */
+.workspace-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Primary Workspace */
+.primary-workspace {
+    flex: 7;
+    /* 70% */
+    background-color: var(--color-surface);
+    padding: var(--spacing-5);
+    overflow-y: auto;
+    border-right: 1px solid var(--color-border);
+}
+
+/* Secondary Panel */
+.secondary-panel {
+    flex: 3;
+    /* 30% */
+    background-color: var(--color-background);
+    padding: var(--spacing-4);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+/* Proof Footer */
+.proof-footer {
+    height: var(--footer-height);
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Or center? usually left aligned checklists */
+    padding: 0 var(--spacing-5);
+    flex-shrink: 0;
+}
+
+.proof-checklist {
+    display: flex;
+    gap: var(--spacing-4);
+}
+
+.proof-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.proof-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+}
