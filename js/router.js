@@ -293,5 +293,27 @@ window.toggleSave = function (id) {
 
 // Modal Logic
 window.openJobModal = function (id) {
-    stener('hashchange', renderRoute);
-    window.addEventListener('load', renderRoute);
+    const job = JOBS_DATA.find(j => j.id === id);
+    if (!job) return;
+
+    document.getElementById('modal-title').innerText = job.title;
+    document.getElementById('modal-company').innerText = job.company;
+    document.getElementById('modal-desc').innerText = job.description;
+
+    const skillsContainer = document.getElementById('modal-skills');
+    skillsContainer.innerHTML = job.skills.map(skill => `<span class="skill-chip">${skill}</span>`).join('');
+
+    const applyBtn = document.getElementById('modal-apply');
+    applyBtn.onclick = () => window.open(job.applyUrl, '_blank');
+
+    document.getElementById('job-modal').style.display = 'flex';
+};
+
+window.closeJobModal = function (event) {
+    if (event && event.target !== document.getElementById('job-modal')) return; // Only close if clicking overlay or x
+    document.getElementById('job-modal').style.display = 'none';
+};
+
+// Initialize
+window.addEventListener('hashchange', renderRoute);
+window.addEventListener('load', renderRoute);
