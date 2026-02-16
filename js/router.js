@@ -43,6 +43,7 @@ function renderRoute() {
     const app = document.getElementById('app');
 
     // Render specific templates
+    // Render specific templates
     if (route.template === 'landing') {
         app.innerHTML = `
             <section class="context-header landing-hero">
@@ -64,14 +65,25 @@ function renderRoute() {
             <div class="workspace-wrapper">
                  <div class="primary-workspace">
                     
-                    <!-- Filter Bar -->
-                    <div class="filter-bar">
-                        <input type="text" id="filter-search" class="filter-input" placeholder="Search role or company..." oninput="applyFilters()">
-                        <select id="filter-location" class="filter-select" onchange="applyFilters()"><option value="">Location</option><option value="Bangalore">Bangalore</option><option value="Pune">Pune</option><option value="Remote">Remote</option></select>
-                        <select id="filter-mode" class="filter-select" onchange="applyFilters()"><option value="">Mode</option><option value="Remote">Remote</option><option value="Hybrid">Hybrid</option><option value="Onsite">Onsite</option></select>
-                        <select id="filter-exp" class="filter-select" onchange="applyFilters()"><option value="">Exp</option><option value="Fresher">Fresher</option><option value="0-1">0-1 Years</option><option value="1-3">1-3 Years</option></select>
-                        <select id="filter-source" class="filter-select" onchange="applyFilters()"><option value="">Source</option><option value="LinkedIn">LinkedIn</option><option value="Naukri">Naukri</option><option value="Indeed">Indeed</option></select>
-                        <select id="filter-sort" class="filter-select" style="margin-left: auto;" onchange="applyFilters()"><option value="latest">Latest</option><option value="salary">Salary</option></select>
+                    <div class="dashboard-controls">
+                        <!-- Filter Bar -->
+                        <div class="filter-bar" style="flex: 1; margin-bottom: 0;">
+                            <input type="text" id="filter-search" class="filter-input" placeholder="Search role or company..." oninput="applyFilters()">
+                            <select id="filter-location" class="filter-select" onchange="applyFilters()"><option value="">Location</option><option value="Bangalore">Bangalore</option><option value="Pune">Pune</option><option value="Remote">Remote</option></select>
+                            <select id="filter-mode" class="filter-select" onchange="applyFilters()"><option value="">Mode</option><option value="Remote">Remote</option><option value="Hybrid">Hybrid</option><option value="Onsite">Onsite</option></select>
+                            <select id="filter-exp" class="filter-select" onchange="applyFilters()"><option value="">Exp</option><option value="Fresher">Fresher</option><option value="0-1">0-1 Years</option><option value="1-3">1-3 Years</option></select>
+                            <select id="filter-source" class="filter-select" onchange="applyFilters()"><option value="">Source</option><option value="LinkedIn">LinkedIn</option><option value="Naukri">Naukri</option><option value="Indeed">Indeed</option></select>
+                            <select id="filter-sort" class="filter-select" style="margin-left: auto;" onchange="applyFilters()"><option value="latest">Latest</option><option value="match">Match Score</option><option value="salary">Salary</option></select>
+                        </div>
+                    </div>
+
+                    <!-- Match Toggle -->
+                    <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: flex-end;">
+                        <label class="toggle-wrapper">
+                            <input type="checkbox" id="toggle-match" class="toggle-input" onchange="applyFilters()">
+                            <span class="toggle-slider"></span>
+                            Show only matches above threshold
+                        </label>
                     </div>
 
                     <!-- Job Cards Container -->
@@ -184,48 +196,34 @@ function renderRoute() {
         return;
     }
 
-    // ... (Proof, Error routes remain same) ...
-
-    if (route.template === 'dashboard') {
+    if (route.template === 'proof') {
         app.innerHTML = `
              <section class="context-header">
-                <h1>Dashboard</h1>
-                <p>Track your job notifications and application status.</p>
+                <h1>Proof</h1>
+                <p>Artifact collection.</p>
             </section>
-            
             <div class="workspace-wrapper">
                  <div class="primary-workspace">
-                    
-                    <div class="dashboard-controls">
-                        <!-- Filter Bar -->
-                        <div class="filter-bar" style="flex: 1; margin-bottom: 0;">
-                            <input type="text" id="filter-search" class="filter-input" placeholder="Search role or company..." oninput="applyFilters()">
-                            <select id="filter-location" class="filter-select" onchange="applyFilters()"><option value="">Location</option><option value="Bangalore">Bangalore</option><option value="Pune">Pune</option><option value="Remote">Remote</option></select>
-                            <select id="filter-mode" class="filter-select" onchange="applyFilters()"><option value="">Mode</option><option value="Remote">Remote</option><option value="Hybrid">Hybrid</option><option value="Onsite">Onsite</option></select>
-                            <select id="filter-exp" class="filter-select" onchange="applyFilters()"><option value="">Exp</option><option value="Fresher">Fresher</option><option value="0-1">0-1 Years</option><option value="1-3">1-3 Years</option></select>
-                            <select id="filter-source" class="filter-select" onchange="applyFilters()"><option value="">Source</option><option value="LinkedIn">LinkedIn</option><option value="Naukri">Naukri</option><option value="Indeed">Indeed</option></select>
-                            <select id="filter-sort" class="filter-select" style="margin-left: auto;" onchange="applyFilters()"><option value="latest">Latest</option><option value="match">Match Score</option><option value="salary">Salary</option></select>
-                        </div>
+                    <div class="card empty-state">
+                        <h3>Artifact Collection</h3>
+                        <p>Placeholder for future proofs.</p>
                     </div>
-
-                    <!-- Match Toggle -->
-                    <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: flex-end;">
-                        <label class="toggle-wrapper">
-                            <input type="checkbox" id="toggle-match" class="toggle-input" onchange="applyFilters()">
-                            <span class="toggle-slider"></span>
-                            Show only matches above threshold
-                        </label>
-                    </div>
-
-                    <!-- Job Cards Container -->
-                    <div id="job-list"></div>
-                    
                  </div>
             </div>
         `;
+        return;
+    }
 
-        // Initial Render
-        window.applyFilters();
+    if (route.template === 'error') {
+        app.innerHTML = `
+            <section class="context-header" style="text-align: center; padding-top: 64px;">
+                <h1 style="color: var(--color-error); font-size: 3rem; margin-bottom: 16px;">404</h1>
+                <p>The page you are looking for does not exist.</p>
+                <div style="margin-top: 32px;">
+                    <a href="#/dashboard" class="btn btn-primary">Return to Dashboard</a>
+                </div>
+            </section>
+        `;
         return;
     }
 }
