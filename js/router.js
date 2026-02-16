@@ -138,45 +138,65 @@ function renderRoute() {
 
     window.renderDigest = function () {
         const container = document.getElementById('digest-workspace');
-        if (!container) return;
+        if (!container) {
+            console.error('Digest Container ID not found');
+            return;
+        }
 
-        // Defensive: Ensure Engine is ready
+        // Visual Debugger
+        let debugLog = document.getElementById('debug-log');
+        if (!debugLog) {
+            debugLog = document.createElement('div');
+            debugLog.id = 'debug-log';
+            debugLog.style.cssText = "background: #333; color: #0f0; padding: 10px; margin-top: 20px; font-family: monospace; font-size: 12px; display: none;"; // Hidden by default, enable if needed
+            container.appendChild(debugLog);
+        }
+        const log = (msg) => {
+            console.log('[Digest]', msg);
+            // debugLog.style.display = 'block'; // Uncomment to show user
+            // debugLog.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg}</div>`;
+        };
+
+        log('renderDigest called');
+
         if (typeof MatchingEngine === 'undefined') {
-            console.warn('MatchingEngine not ready, retrying...');
-            setTimeout(window.renderDigest, 50);
+            log('MatchingEngine missing, retrying...');
+            setTimeout(window.renderDigest, 100);
             return;
         }
 
         const prefs = JSON.parse(localStorage.getItem('jobTrackerPreferences') || 'null');
-
-        // 1. Block if no prefs
         if (!prefs) {
+            log('No prefs found');
+            // ... (block if no prefs)
             container.innerHTML = `
             <div class="card empty-state">
                 <div style="font-size: 3rem; margin-bottom: 16px;">⚙️</div>
                 <h3>Set your preferences first.</h3>
                 <p>We need to know what you're looking for to generate your digest.</p>
                 <a href="#/settings" class="btn btn-primary" style="margin-top: 16px;">Go to Settings</a>
-            </div>
-        `;
+            </div>`;
             return;
         }
 
-        // 2. Check for today's digest in LocalStorage
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const today = new Date().toISOString().split('T')[0];
         const storageKey = `jobTrackerDigest_${today}`;
         const cachedDigest = localStorage.getItem(storageKey);
 
         if (cachedDigest) {
+            log('Found cached digest');
             try {
                 const digestJobs = JSON.parse(cachedDigest);
+                log(`Rendering ${digestJobs.length} jobs`);
                 renderDigestUI(container, digestJobs, today);
+                log('Render complete');
             } catch (e) {
-                console.error('Digest Render Error:', e);
+                log('Error parsing digest: ' + e.message);
                 container.innerHTML = `<div class="card empty-state"><p>Error loading digest. <button onclick="localStorage.removeItem('${storageKey}'); location.reload()">Reset</button></p></div>`;
             }
         } else {
-            // 3. Show "Generate" state
+            log('No cache, showing Generate button');
+            // ... (show generate)
             container.innerHTML = `
             <div class="card empty-state">
                 <div style="font-size: 3rem; margin-bottom: 16px;">📧</div>
