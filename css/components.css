@@ -329,6 +329,85 @@
 
 .skill-chip {
     background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+}
+
+/* Match Score Badges */
+.match-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 32px;
+}
+
+.score-green {
+    background-color: #e6f4ea;
+    color: #137333;
+    border: 1px solid #ceead6;
+}
+
+.score-amber {
+    background-color: #fef7e0;
+    color: #b06000;
+    border: 1px solid #feebc8;
+}
+
+.score-neutral {
+    background-color: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+}
+
+.score-grey {
+    background-color: #f8f9fa;
+    color: #80868b;
+    border: 1px solid #e8eaed;
+}
+
+/* Dashboard Controls Row */
+.dashboard-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+/* Toggle Switch */
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-slider {
+    width: 36px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 20px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
     width: 16px;
     height: 16px;
     left: 2px;
