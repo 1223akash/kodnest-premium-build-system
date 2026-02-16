@@ -25,6 +25,32 @@
 
     <div class="app-container">
 
+        <!-- Job Details Modal -->
+        <div id="job-modal" class="modal-overlay" onclick="closeJobModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeJobModal()">&times;</button>
+                <h2 id="modal-title" style="margin-bottom: 4px;">Job Title</h2>
+                <p id="modal-company" style="color: var(--color-text-secondary); margin-bottom: 16px;">Company Name</p>
+
+                <div style="margin-bottom: 16px;">
+                    <strong>Description</strong>
+                    <p id="modal-desc" style="margin-top: 8px; line-height: 1.6; color: var(--color-text-secondary);">
+                        Job description goes here...</p>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <strong>Skills</strong>
+                    <div id="modal-skills" class="modal-skills">
+                        <!-- Skills injected here -->
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button id="modal-apply" class="btn btn-primary" style="flex: 1;">Apply Now ↗</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Top Bar with Navigation -->
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: var(--spacing-3);">

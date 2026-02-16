@@ -121,6 +121,57 @@ function renderRoute() {
         return;
     }
 
+    if (route.template === 'settings') {
+        app.innerHTML = `
+             <section class="context-header">
+                <h1>Settings</h1>
+                <p>Customize your job preferences.</p>
+            </section>
+            <div class="workspace-wrapper">
+                 <div class="primary-workspace">
+                    
+                    <div class="card">
+                        <div class="card-header">Job Preferences</div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Role Keywords</label>
+                            <input type="text" class="input-field" placeholder="e.g. Frontend Developer, React.js">
+                        </div>
+
+                         <div class="input-group">
+                            <label class="input-label">Preferred Locations</label>
+                            <input type="text" class="input-field" placeholder="e.g. Bangalore, Remote, Pune">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Work Mode</label>
+                            <select class="input-field">
+                                <option>Remote</option>
+                                <option>Hybrid</option>
+                                <option>Onsite</option>
+                                <option selected>Any</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Experience Level</label>
+                             <select class="input-field">
+                                <option>Fresher (0-1 years)</option>
+                                <option>Junior (1-3 years)</option>
+                                <option>Mid-Senior (3-5 years)</option>
+                            </select>
+                        </div>
+
+                         <button class="btn btn-primary">Save Preferences</button>
+
+                    </div>
+
+                 </div>
+            </div>
+        `;
+        return;
+    }
+
     if (route.template === 'proof') {
         app.innerHTML = `
              <section class="context-header">
