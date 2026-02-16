@@ -66,12 +66,12 @@ function renderRoute() {
                     
                     <!-- Filter Bar -->
                     <div class="filter-bar">
-                        <input type="text" class="filter-input" placeholder="Search role or company...">
-                        <select class="filter-select"><option>Location</option><option>Bangalore</option><option>Pune</option><option>Remote</option></select>
-                        <select class="filter-select"><option>Mode</option><option>Remote</option><option>Hybrid</option><option>Onsite</option></select>
-                        <select class="filter-select"><option>Exp</option><option>Fresher</option><option>0-1 Years</option><option>1-3 Years</option></select>
-                        <select class="filter-select"><option>Source</option><option>LinkedIn</option><option>Naukri</option><option>Indeed</option></select>
-                        <select class="filter-select" style="margin-left: auto;"><option>Latest</option><option>Salary</option></select>
+                        <input type="text" id="filter-search" class="filter-input" placeholder="Search role or company..." oninput="applyFilters()">
+                        <select id="filter-location" class="filter-select" onchange="applyFilters()"><option value="">Location</option><option value="Bangalore">Bangalore</option><option value="Pune">Pune</option><option value="Remote">Remote</option></select>
+                        <select id="filter-mode" class="filter-select" onchange="applyFilters()"><option value="">Mode</option><option value="Remote">Remote</option><option value="Hybrid">Hybrid</option><option value="Onsite">Onsite</option></select>
+                        <select id="filter-exp" class="filter-select" onchange="applyFilters()"><option value="">Exp</option><option value="Fresher">Fresher</option><option value="0-1">0-1 Years</option><option value="1-3">1-3 Years</option></select>
+                        <select id="filter-source" class="filter-select" onchange="applyFilters()"><option value="">Source</option><option value="LinkedIn">LinkedIn</option><option value="Naukri">Naukri</option><option value="Indeed">Indeed</option></select>
+                        <select id="filter-sort" class="filter-select" style="margin-left: auto;" onchange="applyFilters()"><option value="latest">Latest</option><option value="salary">Salary</option></select>
                     </div>
 
                     <!-- Job Cards Container -->
@@ -81,43 +81,8 @@ function renderRoute() {
             </div>
         `;
 
-        // Render Jobs
-        const container = document.getElementById('job-list');
-        const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-
-        JOBS_DATA.forEach(job => {
-            const isSaved = savedJobs.includes(job.id);
-            const card = document.createElement('div');
-            card.className = 'job-card';
-            card.innerHTML = `
-                <div class="job-header">
-                    <div>
-                        <div class="job-title">${job.title}</div>
-                        <div class="job-company">${job.company}</div>
-                    </div>
-                    <div class="tag source">${job.source}</div>
-                </div>
-                
-                <div class="job-tags">
-                    <span class="tag">${job.location}</span>
-                    <span class="tag">${job.mode}</span>
-                    <span class="tag">${job.experience} Yrs</span>
-                    <span class="tag salary">${job.salaryRange}</span>
-                </div>
-
-                <div class="job-footer">
-                    <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
-                        <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
-                        <button class="btn ${isSaved ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSave(${job.id})">
-                            ${isSaved ? 'Saved' : 'Save'}
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+        // Initial Render
+        window.applyFilters();
         return;
     }
 
@@ -133,51 +98,7 @@ function renderRoute() {
                  </div>
             </div>
         `;
-
-        const container = document.getElementById('saved-job-list');
-        const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-        const savedData = JOBS_DATA.filter(job => savedJobs.includes(job.id));
-
-        if (savedData.length === 0) {
-            container.innerHTML = `
-                <div class="card empty-state">
-                    <div style="font-size: 3rem; margin-bottom: 16px;">🔖</div>
-                        <h3>No saved jobs.</h3>
-                    <p>Bookmark jobs from your dashboard to view them here.</p>
-                </div>
-            `;
-        } else {
-            savedData.forEach(job => {
-                const card = document.createElement('div');
-                card.className = 'job-card';
-                card.innerHTML = `
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">${job.title}</div>
-                            <div class="job-company">${job.company}</div>
-                        </div>
-                        <div class="tag source">${job.source}</div>
-                    </div>
-                    
-                    <div class="job-tags">
-                        <span class="tag">${job.location}</span>
-                        <span class="tag">${job.mode}</span>
-                        <span class="tag">${job.experience} Yrs</span>
-                        <span class="tag salary">${job.salaryRange}</span>
-                    </div>
-
-                    <div class="job-footer">
-                        <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
-                            <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
-                            <button class="btn btn-primary btn-sm" onclick="toggleSave(${job.id})">Unsave</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+        renderSavedJobs();
         return;
     }
 
@@ -232,18 +153,145 @@ function renderRoute() {
     }
 }
 
-// Global Save Handler
-window.toggleSave = function (id) {
-    let savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-    if (savedJobs.includes(id)) {
-        savedJobs = savedJobs.filter(jobId => jobId !== id);
-    } else {
-        savedJobs.push(id);
+// Filter Logic
+window.applyFilters = function () {
+    const search = document.getElementById('filter-search').value.toLowerCase();
+    const location = document.getElementById('filter-location').value;
+    const mode = document.getElementById('filter-mode').value;
+    const exp = document.getElementById('filter-exp').value;
+    const source = document.getElementById('filter-source').value;
+    const sort = document.getElementById('filter-sort').value;
+
+    let filtered = JOBS_DATA.filter(job => {
+        const matchSearch = job.title.toLowerCase().includes(search) || job.company.toLowerCase().includes(search);
+        const matchLocation = location ? job.location.includes(location) : true;
+        const matchMode = mode ? job.mode === mode : true;
+        const matchExp = exp ? job.experience.includes(exp) : true;
+        const matchSource = source ? job.source === source : true;
+        return matchSearch && matchLocation && matchMode && matchExp && matchSource;
+    });
+
+    if (sort === 'latest') {
+        filtered.sort((a, b) => a.postedDaysAgo - b.postedDaysAgo);
+    } else if (sort === 'salary') {
+        // Basic sort by parsing the first number in salary string
+        filtered.sort((a, b) => {
+            const getSal = s => parseInt(s.salaryRange.replace(/\D/g, '')) || 0;
+            return getSal(b) - getSal(a);
+        });
     }
-    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
-    renderRoute(); // Re-render to update UI
+
+    const container = document.getElementById('job-list');
+    container.innerHTML = '';
+    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="padding: 40px;"><h3>No matching jobs found.</h3><p>Try adjusting your filters.</p></div>`;
+        return;
+    }
+
+    filtered.forEach(job => {
+        const isSaved = savedJobs.includes(job.id);
+        const card = createJobCard(job, isSaved);
+        container.appendChild(card);
+    });
 };
 
-// Initialize
-window.addEventListener('hashchange', renderRoute);
-window.addEventListener('load', renderRoute);
+function createJobCard(job, isSaved) {
+    const card = document.createElement('div');
+    card.className = 'job-card';
+    card.innerHTML = `
+        <div class="job-header">
+            <div>
+                <div class="job-title">${job.title}</div>
+                <div class="job-company">${job.company}</div>
+            </div>
+            <div class="tag source">${job.source}</div>
+        </div>
+        
+        <div class="job-tags">
+            <span class="tag">${job.location}</span>
+            <span class="tag">${job.mode}</span>
+            <span class="tag">${job.experience} Yrs</span>
+            <span class="tag salary">${job.salaryRange}</span>
+        </div>
+
+        <div class="job-footer">
+            <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
+            <div class="card-actions">
+                <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
+                <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
+                <button id="btn-save-${job.id}" class="btn ${isSaved ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSave(${job.id})">
+                    ${isSaved ? 'Saved' : 'Save'}
+                </button>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function renderSavedJobs() {
+    const container = document.getElementById('saved-job-list');
+    if (!container) return;
+
+    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    const savedData = JOBS_DATA.filter(job => savedJobs.includes(job.id));
+
+    if (savedData.length === 0) {
+        container.innerHTML = `
+            <div class="card empty-state">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🔖</div>
+                    <h3>No saved jobs.</h3>
+                <p>Bookmark jobs from your dashboard to view them here.</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = '';
+        savedData.forEach(job => {
+            const card = createJobCard(job, true); // Always saved here
+            // Override save button to be "Unsave" behavior clearly
+            const btn = card.querySelector(`#btn-save-${job.id}`);
+            btn.innerText = 'Unsave';
+            container.appendChild(card);
+        });
+    }
+}
+
+// Global Save Handler (Optimistic UI)
+window.toggleSave = function (id) {
+    let savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    let isNowSaved = false;
+
+    if (savedJobs.includes(id)) {
+        savedJobs = savedJobs.filter(jobId => jobId !== id);
+        isNowSaved = false;
+    } else {
+        savedJobs.push(id);
+        isNowSaved = true;
+    }
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+
+    // Optimistic UI Update in Dashboard
+    const btn = document.getElementById(`btn-save-${id}`);
+    if (btn) {
+        if (isNowSaved) {
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+            btn.innerText = 'Saved';
+        } else {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+            btn.innerText = 'Save';
+        }
+    }
+
+    // Refresh if on Saved page to remove item
+    if (window.location.hash === '#/saved') {
+        renderSavedJobs();
+    }
+};
+
+// Modal Logic
+window.openJobModal = function (id) {
+    stener('hashchange', renderRoute);
+    window.addEventListener('load', renderRoute);
