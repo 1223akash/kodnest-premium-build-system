@@ -9,12 +9,27 @@ const routes = {
     '/saved': { title: 'Saved Jobs', template: 'saved' },
     '/digest': { title: 'Daily Digest', template: 'digest' },
     '/settings': { title: 'Settings', template: 'settings' },
-    '/proof': { title: 'Proof', template: 'proof' }
+    '/proof': { title: 'Proof', template: 'proof' },
+    '404': { title: 'Page Not Found', template: 'error' }
 };
 
+let currentHash = null;
+
 function renderRoute() {
-    const hash = window.location.hash.slice(1) || '/';
-    const route = routes[hash] || routes['/'];
+    let hash = window.location.hash.slice(1) || '/';
+
+    // Prevent flicker: Do nothing if the hash hasn't truly changed
+    // (Note: window.onhashchange normally handles this, but being explicit helps safety)
+    if (hash === currentHash) return;
+    currentHash = hash;
+
+    let route = routes[hash];
+
+    // Handle 404
+    if (!route) {
+        route = routes['404'];
+        // Optional: Reset title if needed, or keep generic
+    }
 
     // Update Title
     document.title = `${route.title} - Job Notification Tracker`;
@@ -26,15 +41,29 @@ function renderRoute() {
             link.classList.add('active');
         }
     });
-    
+
     // Fallback for root path active state
     if (hash === '/' || hash === '') {
-         const dashboardLink = document.querySelector('a[href="#/dashboard"]');
-         if (dashboardLink) dashboardLink.classList.add('active');
+        const dashboardLink = document.querySelector('a[href="#/dashboard"]');
+        if (dashboardLink) dashboardLink.classList.add('active');
     }
 
     // Render Content
     const app = document.getElementById('app');
+
+    if (route.template === 'error') {
+        app.innerHTML = `
+            <section class="context-header" style="text-align: center; padding-top: var(--spacing-8);">
+                <h1 style="color: var(--color-error); font-size: 3rem; margin-bottom: var(--spacing-2);">404</h1>
+                <p>The page you are looking for does not exist.</p>
+                <div style="margin-top: var(--spacing-4);">
+                    <a href="#/dashboard" class="btn btn-primary" style="display: inline-block;">Return to Dashboard</a>
+                </div>
+            </section>
+        `;
+        return;
+    }
+
     app.innerHTML = `
         <section class="context-header">
             <h1>${route.title}</h1>
