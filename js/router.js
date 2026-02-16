@@ -251,24 +251,34 @@ window.applyFilters = function () {
 function createJobCard(job, isSaved) {
     const card = document.createElement('div');
     card.className = 'job-card';
+    // Defensive coding: providing fallbacks for potentially missing data
+    const title = job.title || 'Untitled Role';
+    const company = job.company || 'Unknown Company';
+    const location = job.location || 'Remote';
+    const mode = job.mode || 'Remote';
+    const exp = job.experience ? `${job.experience} Yrs` : 'Exp N/A';
+    const salary = job.salaryRange || 'Not disclosed';
+    const source = job.source || 'Aggregated';
+    const posted = job.postedDaysAgo === 0 ? 'Today' : `${job.postedDaysAgo} days ago`;
+
     card.innerHTML = `
         <div class="job-header">
             <div>
-                <div class="job-title">${job.title}</div>
-                <div class="job-company">${job.company}</div>
+                <div class="job-title">${title}</div>
+                <div class="job-company">${company}</div>
             </div>
-            <div class="tag source">${job.source}</div>
+            <div class="tag source">${source}</div>
         </div>
         
         <div class="job-tags">
-            <span class="tag">${job.location}</span>
-            <span class="tag">${job.mode}</span>
-            <span class="tag">${job.experience} Yrs</span>
-            <span class="tag salary">${job.salaryRange}</span>
+            <span class="tag">${location}</span>
+            <span class="tag">${mode}</span>
+            <span class="tag">${exp}</span>
+            <span class="tag salary">${salary}</span>
         </div>
 
         <div class="job-footer">
-            <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
+            <span class="posted-date">${posted}</span>
             <div class="card-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
                 <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
