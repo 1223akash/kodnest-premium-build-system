@@ -23,50 +23,43 @@
 
 <body>
 
-    <div class="app-container">
+    </button>
+    <div class="brand">KodNest Premium</div>
+    </div>
 
-        <!-- Top Bar with Navigation -->
-        <header class="top-bar">
-            <div style="display: flex; align-items: center; gap: var(--spacing-3);">
-                <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
-                    ☰
-                </button>
-                <div class="brand">KodNest Premium</div>
-            </div>
+    <!-- Navigation Links -->
+    <nav class="nav-container" id="nav-menu">
+        <a href="#/dashboard" class="nav-link">Dashboard</a>
+        <a href="#/saved" class="nav-link">Saved</a>
+        <a href="#/digest" class="nav-link">Digest</a>
+        <a href="#/settings" class="nav-link">Settings</a>
+        <a href="#/proof" class="nav-link">Proof</a>
+    </nav>
 
-            <!-- Navigation Links -->
-            <nav class="nav-container" id="nav-menu">
-                <a href="#/dashboard" class="nav-link">Dashboard</a>
-                <a href="#/saved" class="nav-link">Saved</a>
-                <a href="#/digest" class="nav-link">Digest</a>
-                <a href="#/settings" class="nav-link">Settings</a>
-                <a href="#/proof" class="nav-link">Proof</a>
-            </nav>
+    <div class="status-badge">Beta v1.0</div>
+    </header>
 
-            <div class="status-badge">Beta v1.0</div>
-        </header>
+    <!-- Main Content (Dynamic Router Outlet) -->
+    <main class="main-content" id="app">
+        <!-- Router will inject content here -->
+    </main>
 
-        <!-- Main Content (Dynamic Router Outlet) -->
-        <main class="main-content" id="app">
-            <!-- Router will inject content here -->
-        </main>
+    <!-- Proof Footer -->
+    <footer class="proof-footer">
+        <div style="font-weight: 600; font-size: 0.9rem;">Proof of Work</div>
 
-        <!-- Proof Footer -->
-        <footer class="proof-footer">
-            <div style="font-weight: 600; font-size: 0.9rem;">Proof of Work</div>
-
-            <div class="proof-checklist">
-                <label class="proof-item">
-                    <input type="checkbox" checked> Routing
-                </label>
-                <label class="proof-item">
-                    <input type="checkbox" checked> Navigation
-                </label>
-                <label class="proof-item">
-                    <input type="checkbox"> Mobile Menu
-                </label>
-            </div>
-        </footer>
+        <div class="proof-checklist">
+            <label class="proof-item">
+                <input type="checkbox" checked> Routing
+            </label>
+            <label class="proof-item">
+                <input type="checkbox" checked> Navigation
+            </label>
+            <label class="proof-item">
+                <input type="checkbox"> Mobile Menu
+            </label>
+        </div>
+    </footer>
 
     </div>
 

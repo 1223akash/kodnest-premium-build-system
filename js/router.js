@@ -108,6 +108,7 @@ function renderRoute() {
                 <div class="job-footer">
                     <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
                     <div class="card-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
                         <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
                         <button class="btn ${isSaved ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSave(${job.id})">
                             ${isSaved ? 'Saved' : 'Save'}
@@ -168,6 +169,7 @@ function renderRoute() {
                     <div class="job-footer">
                         <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
                         <div class="card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
                             <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
                             <button class="btn btn-primary btn-sm" onclick="toggleSave(${job.id})">Unsave</button>
                         </div>
