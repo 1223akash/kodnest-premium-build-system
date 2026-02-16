@@ -60,67 +60,63 @@ function renderRoute() {
                 <h1>Dashboard</h1>
                 <p>Track your job notifications and application status.</p>
             </section>
-            <div class="workspace-wrapper">
-                 <div class="primary-workspace">
-                    <div class="card empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">📭</div>
-                        <h3>No jobs yet.</h3>
-                        <p>In the next step, you will load a realistic dataset.</p>
-                    </div>
-                 </div>
-            </div>
-        `;
-        return;
-    }
-
-    if (route.template === 'settings') {
-        app.innerHTML = `
-             <section class="context-header">
-                <h1>Settings</h1>
-                <p>Customize your job preferences.</p>
-            </section>
+            
             <div class="workspace-wrapper">
                  <div class="primary-workspace">
                     
-                    <div class="card">
-                        <div class="card-header">Job Preferences</div>
-                        
-                        <div class="input-group">
-                            <label class="input-label">Role Keywords</label>
-                            <input type="text" class="input-field" placeholder="e.g. Frontend Developer, React.js">
-                        </div>
-
-                         <div class="input-group">
-                            <label class="input-label">Preferred Locations</label>
-                            <input type="text" class="input-field" placeholder="e.g. Bangalore, Remote, Pune">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label class="input-label">Work Mode</label>
-                            <select class="input-field">
-                                <option>Remote</option>
-                                <option>Hybrid</option>
-                                <option>Onsite</option>
-                                <option selected>Any</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Experience Level</label>
-                             <select class="input-field">
-                                <option>Fresher (0-1 years)</option>
-                                <option>Junior (1-3 years)</option>
-                                <option>Mid-Senior (3-5 years)</option>
-                            </select>
-                        </div>
-
-                         <button class="btn btn-primary">Save Preferences</button>
-
+                    <!-- Filter Bar -->
+                    <div class="filter-bar">
+                        <input type="text" class="filter-input" placeholder="Search role or company...">
+                        <select class="filter-select"><option>Location</option><option>Bangalore</option><option>Pune</option><option>Remote</option></select>
+                        <select class="filter-select"><option>Mode</option><option>Remote</option><option>Hybrid</option><option>Onsite</option></select>
+                        <select class="filter-select"><option>Exp</option><option>Fresher</option><option>0-1 Years</option><option>1-3 Years</option></select>
+                        <select class="filter-select"><option>Source</option><option>LinkedIn</option><option>Naukri</option><option>Indeed</option></select>
+                        <select class="filter-select" style="margin-left: auto;"><option>Latest</option><option>Salary</option></select>
                     </div>
 
+                    <!-- Job Cards Container -->
+                    <div id="job-list"></div>
+                    
                  </div>
             </div>
         `;
+
+        // Render Jobs
+        const container = document.getElementById('job-list');
+        const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+
+        JOBS_DATA.forEach(job => {
+            const isSaved = savedJobs.includes(job.id);
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.innerHTML = `
+                <div class="job-header">
+                    <div>
+                        <div class="job-title">${job.title}</div>
+                        <div class="job-company">${job.company}</div>
+                    </div>
+                    <div class="tag source">${job.source}</div>
+                </div>
+                
+                <div class="job-tags">
+                    <span class="tag">${job.location}</span>
+                    <span class="tag">${job.mode}</span>
+                    <span class="tag">${job.experience} Yrs</span>
+                    <span class="tag salary">${job.salaryRange}</span>
+                </div>
+
+                <div class="job-footer">
+                    <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
+                        <button class="btn ${isSaved ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSave(${job.id})">
+                            ${isSaved ? 'Saved' : 'Save'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
         return;
     }
 
@@ -131,15 +127,55 @@ function renderRoute() {
                 <p>Your bookmarked opportunities.</p>
             </section>
             <div class="workspace-wrapper">
-                 <div class="primary-workspace">
-                    <div class="card empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">🔖</div>
-                         <h3>No saved jobs.</h3>
-                        <p>Bookmark jobs from your dashboard to view them here.</p>
-                    </div>
+                 <div class="primary-workspace" id="saved-job-list">
+                    <!-- Saved jobs injected here -->
                  </div>
             </div>
         `;
+
+        const container = document.getElementById('saved-job-list');
+        const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+        const savedData = JOBS_DATA.filter(job => savedJobs.includes(job.id));
+
+        if (savedData.length === 0) {
+            container.innerHTML = `
+                <div class="card empty-state">
+                    <div style="font-size: 3rem; margin-bottom: 16px;">🔖</div>
+                        <h3>No saved jobs.</h3>
+                    <p>Bookmark jobs from your dashboard to view them here.</p>
+                </div>
+            `;
+        } else {
+            savedData.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">${job.title}</div>
+                            <div class="job-company">${job.company}</div>
+                        </div>
+                        <div class="tag source">${job.source}</div>
+                    </div>
+                    
+                    <div class="job-tags">
+                        <span class="tag">${job.location}</span>
+                        <span class="tag">${job.mode}</span>
+                        <span class="tag">${job.experience} Yrs</span>
+                        <span class="tag salary">${job.salaryRange}</span>
+                    </div>
+
+                    <div class="job-footer">
+                        <span class="posted-date">${job.postedDaysAgo === 0 ? 'Today' : job.postedDaysAgo + ' days ago'}</span>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
+                            <button class="btn btn-primary btn-sm" onclick="toggleSave(${job.id})">Unsave</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
         return;
     }
 
@@ -193,6 +229,18 @@ function renderRoute() {
         return;
     }
 }
+
+// Global Save Handler
+window.toggleSave = function (id) {
+    let savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    if (savedJobs.includes(id)) {
+        savedJobs = savedJobs.filter(jobId => jobId !== id);
+    } else {
+        savedJobs.push(id);
+    }
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+    renderRoute(); // Re-render to update UI
+};
 
 // Initialize
 window.addEventListener('hashchange', renderRoute);

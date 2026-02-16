@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KodNest Premium - Job Notification Tracker</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -17,10 +20,11 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/navigation.css">
 </head>
+
 <body>
 
     <div class="app-container">
-        
+
         <!-- Top Bar with Navigation -->
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: var(--spacing-3);">
@@ -50,7 +54,7 @@
         <!-- Proof Footer -->
         <footer class="proof-footer">
             <div style="font-weight: 600; font-size: 0.9rem;">Proof of Work</div>
-            
+
             <div class="proof-checklist">
                 <label class="proof-item">
                     <input type="checkbox" checked> Routing
@@ -67,6 +71,7 @@
     </div>
 
     <!-- Router Logic -->
+    <script src="js/jobs-data.js"></script>
     <script src="js/router.js"></script>
     <script>
         // Mobile Menu Toggle
@@ -85,4 +90,5 @@
         });
     </script>
 </body>
+
 </html>
