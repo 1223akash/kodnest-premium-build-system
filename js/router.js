@@ -242,7 +242,7 @@ window.loadPreferences = function () {
     document.getElementById('pref-min-score').value = prefs.minMatchScore;
     document.getElementById('score-val').innerText = prefs.minMatchScore;
 
-    const mode checkboxes = document.querySelectorAll('input[name="pref-mode"]');
+    const checkboxes = document.querySelectorAll('input[name="pref-mode"]');
     checkboxes.forEach(cb => {
         if (prefs.preferredMode.includes(cb.value)) cb.checked = true;
     });
