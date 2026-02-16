@@ -140,6 +140,13 @@ function renderRoute() {
         const container = document.getElementById('digest-workspace');
         if (!container) return;
 
+        // Defensive: Ensure Engine is ready
+        if (typeof MatchingEngine === 'undefined') {
+            console.warn('MatchingEngine not ready, retrying...');
+            setTimeout(window.renderDigest, 50);
+            return;
+        }
+
         const prefs = JSON.parse(localStorage.getItem('jobTrackerPreferences') || 'null');
 
         // 1. Block if no prefs
@@ -161,8 +168,13 @@ function renderRoute() {
         const cachedDigest = localStorage.getItem(storageKey);
 
         if (cachedDigest) {
-            const digestJobs = JSON.parse(cachedDigest);
-            renderDigestUI(container, digestJobs, today);
+            try {
+                const digestJobs = JSON.parse(cachedDigest);
+                renderDigestUI(container, digestJobs, today);
+            } catch (e) {
+                console.error('Digest Render Error:', e);
+                container.innerHTML = `<div class="card empty-state"><p>Error loading digest. <button onclick="localStorage.removeItem('${storageKey}'); location.reload()">Reset</button></p></div>`;
+            }
         } else {
             // 3. Show "Generate" state
             container.innerHTML = `
