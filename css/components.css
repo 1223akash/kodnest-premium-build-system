@@ -424,3 +424,104 @@
 .toggle-input:checked+.toggle-slider::before {
     transform: translateX(16px);
 }
+
+/* Daily Digest Email Style */
+.digest-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-family: var(--font-body);
+}
+
+.digest-header {
+    text-align: center;
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+}
+
+.digest-header h2 {
+    font-family: var(--font-heading);
+    color: var(--color-text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.digest-date {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.digest-item {
+    padding: 24px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.digest-item:last-child {
+    border-bottom: none;
+}
+
+.digest-job-main {
+    flex: 1;
+}
+
+.digest-job-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 4px;
+    display: block;
+    text-decoration: none;
+}
+
+.digest-job-meta {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.digest-score {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--color-success);
+}
+
+.digest-actions {
+    margin-left: 16px;
+}
+
+.digest-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: var(--color-accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.digest-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.digest-controls {
+    max-width: 600px;
+    margin: 0 auto 24px auto;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}

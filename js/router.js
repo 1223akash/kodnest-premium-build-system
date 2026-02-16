@@ -121,17 +121,181 @@ function renderRoute() {
                 <p>Your curated morning update.</p>
             </section>
             <div class="workspace-wrapper">
-                 <div class="primary-workspace">
-                    <div class="card empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 16px;">☕</div>
-                        <h3>Your digest arrives at 9AM.</h3>
-                        <p>Check back tomorrow for your personalized job list.</p>
-                    </div>
+                 <div class="primary-workspace" id="digest-workspace">
+                    <!-- Injected via JS -->
                  </div>
             </div>
         `;
+        renderDigest();
         return;
     }
+
+    // ... (existing code) ...
+
+    // ==========================================
+    // DAILY DIGEST ENGINE
+    // ==========================================
+
+    window.renderDigest = function () {
+        const container = document.getElementById('digest-workspace');
+        if (!container) return;
+
+        const prefs = JSON.parse(localStorage.getItem('jobTrackerPreferences') || 'null');
+
+        // 1. Block if no prefs
+        if (!prefs) {
+            container.innerHTML = `
+            <div class="card empty-state">
+                <div style="font-size: 3rem; margin-bottom: 16px;">⚙️</div>
+                <h3>Set your preferences first.</h3>
+                <p>We need to know what you're looking for to generate your digest.</p>
+                <a href="#/settings" class="btn btn-primary" style="margin-top: 16px;">Go to Settings</a>
+            </div>
+        `;
+            return;
+        }
+
+        // 2. Check for today's digest in LocalStorage
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const storageKey = `jobTrackerDigest_${today}`;
+        const cachedDigest = localStorage.getItem(storageKey);
+
+        if (cachedDigest) {
+            const digestJobs = JSON.parse(cachedDigest);
+            renderDigestUI(container, digestJobs, today);
+        } else {
+            // 3. Show "Generate" state
+            container.innerHTML = `
+            <div class="card empty-state">
+                <div style="font-size: 3rem; margin-bottom: 16px;">📧</div>
+                <h3>It's 9:00 AM somewhere.</h3>
+                <p>Ready to generate your personalized job briefing for today?</p>
+                <div style="margin-top: 8px; font-size: 0.85rem; color: #888; background: #eee; padding: 4px 8px; display: inline-block; border-radius: 4px;">
+                    Demo Mode: Daily 9AM trigger simulated manually.
+                </div>
+                <br>
+                <button class="btn btn-primary" style="margin-top: 24px;" onclick="generateDigest('${today}')">
+                    Generate Today's Digest
+                </button>
+            </div>
+        `;
+        }
+    };
+
+    window.generateDigest = function (todayStr) {
+        const prefs = JSON.parse(localStorage.getItem('jobTrackerPreferences'));
+
+        // Score all jobs
+        const scoredJobs = JOBS_DATA.map(job => {
+            const score = MatchingEngine.calculateScore(job, prefs);
+            return { ...job, score };
+        });
+
+        // Filter Logic: Must have score > 0 to be relevant? Or just top 10?
+        // User said "No matches found" edge case, so strictly filter > 0
+        // Actually, user said matches > threshold (usually), but let's stick to simple "scored > 0" for relevance
+        // Better: Filter by minScore pref if set, else > 0
+        const minScore = parseInt(prefs.minMatchScore) || 1;
+        let candidates = scoredJobs.filter(j => j.score >= minScore);
+
+        // Sort: Match Score Desc, then Posted Days Asc (Newest first)
+        candidates.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.postedDaysAgo - b.postedDaysAgo;
+        });
+
+        // Top 10
+        const top10 = candidates.slice(0, 10);
+
+        if (top10.length === 0) {
+            const container = document.getElementById('digest-workspace');
+            container.innerHTML = `
+            <div class="card empty-state">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🌵</div>
+                <h3>No matching roles today.</h3>
+                <p>Check again tomorrow or broaden your preferences.</p>
+                <button class="btn btn-secondary" onclick="renderDigest()" style="margin-top: 16px;">Back</button>
+            </div>
+        `;
+            return;
+        }
+
+        // Persist
+        localStorage.setItem(`jobTrackerDigest_${todayStr}`, JSON.stringify(top10));
+
+        // Render
+        const container = document.getElementById('digest-workspace');
+        renderDigestUI(container, top10, todayStr);
+    };
+
+    window.renderDigestUI = function (container, jobs, dateStr) {
+        const dateDisplay = new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        const jobRows = jobs.map(job => {
+            const scoreColor = MatchingEngine.getScoreColor(job.score);
+            return `
+            <div class="digest-item">
+                <div class="digest-job-main">
+                    <a href="${job.applyUrl}" target="_blank" class="digest-job-title">${job.title}</a>
+                    <div class="digest-job-meta">
+                        ${job.company} • ${job.location} • ${job.experience} Yrs
+                    </div>
+                    <div class="digest-score" style="color: var(--color-${scoreColor === 'green' ? 'success' : 'warning'});">
+                        ${job.score}% Match
+                    </div>
+                </div>
+                <div class="digest-actions">
+                    <a href="${job.applyUrl}" target="_blank" class="digest-btn">Apply</a>
+                </div>
+            </div>
+        `;
+        }).join('');
+
+        container.innerHTML = `
+        <div class="digest-controls">
+            <button class="btn btn-secondary btn-sm" onclick="copyDigest()">📋 Copy to Clipboard</button>
+            <button class="btn btn-secondary btn-sm" onclick="emailDigest()">✉️ Create Email Draft</button>
+        </div>
+
+        <div class="digest-container" id="digest-content">
+            <div class="digest-header">
+                <h2>Top ${jobs.length} Jobs For You — 9AM Digest</h2>
+                <div class="digest-date">${dateDisplay}</div>
+            </div>
+
+            <div class="digest-body">
+                ${jobRows}
+            </div>
+
+            <div class="digest-footer">
+                <p>This digest was generated based on your preferences.</p>
+                <p>Job Notification Tracker • <a href="#/settings">Update Preferences</a></p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 24px;">
+            <button class="btn btn-secondary btn-sm" onclick="clearDigest('${dateStr}')">Reset Simulation (Dev Only)</button>
+        </div>
+    `;
+    };
+
+    window.copyDigest = function () {
+        const digestText = document.getElementById('digest-content').innerText;
+        navigator.clipboard.writeText(digestText).then(() => alert('Digest copied to clipboard!'));
+    };
+
+    window.emailDigest = function () {
+        const digestText = document.getElementById('digest-content').innerText;
+        const subject = encodeURIComponent("My 9AM Job Digest");
+        const body = encodeURIComponent(digestText);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    };
+
+    window.clearDigest = function (dateStr) {
+        localStorage.removeItem(`jobTrackerDigest_${dateStr}`);
+        renderDigest();
+    };
+
 
     if (route.template === 'settings') {
         app.innerHTML = `
