@@ -45,9 +45,9 @@ function renderRoute() {
     // Render specific templates
     if (route.template === 'landing') {
         app.innerHTML = `
-            <section class="context-header" style="text-align: center; padding: 64px 20px;">
-                <h1 style="font-size: 2.5rem; margin-bottom: 16px;">Stop Missing The Right Jobs.</h1>
-                <p style="font-size: 1.25rem; margin: 0 auto 32px; max-width: 600px;">Precision-matched job discovery delivered daily at 9AM.</p>
+            <section class="context-header landing-hero">
+                <h1>Stop Missing The Right Jobs.</h1>
+                <p>Precision-matched job discovery delivered daily at 9AM.</p>
                 <a href="#/settings" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 32px;">Start Tracking</a>
             </section>
         `;

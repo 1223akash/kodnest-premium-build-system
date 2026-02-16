@@ -128,3 +128,35 @@
     color: var(--color-text-primary);
     font-size: 1.25rem;
 }
+
+/* Landing Page Hero */
+.landing-hero {
+    text-align: center;
+    padding: var(--spacing-8) var(--spacing-3);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.landing-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-2);
+    line-height: 1.2;
+}
+
+.landing-hero p {
+    font-size: 1.25rem;
+    margin: 0 auto var(--spacing-4);
+    max-width: 600px;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+    .landing-hero h1 {
+        font-size: 2rem;
+        /* Scale down for mobile */
+    }
+
+    .landing-hero p {
+        font-size: 1.1rem;
+    }
+}
