@@ -74,6 +74,13 @@ function renderRoute() {
                             <select id="filter-exp" class="filter-select" onchange="applyFilters()"><option value="">Exp</option><option value="Fresher">Fresher</option><option value="0-1">0-1 Years</option><option value="1-3">1-3 Years</option></select>
                             <select id="filter-source" class="filter-select" onchange="applyFilters()"><option value="">Source</option><option value="LinkedIn">LinkedIn</option><option value="Naukri">Naukri</option><option value="Indeed">Indeed</option></select>
                             <select id="filter-sort" class="filter-select" style="margin-left: auto;" onchange="applyFilters()"><option value="latest">Latest</option><option value="match">Match Score</option><option value="salary">Salary</option></select>
+                            <select id="filter-status" class="filter-select" style="margin-left: 8px; border-color: var(--color-accent);" onchange="applyFilters()">
+                                <option value="">All Status</option>
+                                <option value="Applied">Applied</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Selected">Selected</option>
+                                <option value="Not Applied">Not Applied</option>
+                            </select>
                         </div>
                     </div>
 
@@ -300,10 +307,15 @@ window.applyFilters = function () {
         const matchExp = exp ? job.experience.includes(exp) : true;
         const matchSource = source ? job.source === source : true;
 
+        // Status Filter
+        const statusFilter = document.getElementById('filter-status').value;
+        const currentStatus = getJobStatus(job.id).status;
+        const matchStatus = statusFilter ? currentStatus === statusFilter : true;
+
         // Match Toggle Logic
         const matchThreshold = matchToggle ? (job.score >= minScore) : true;
 
-        return matchSearch && matchLocation && matchMode && matchExp && matchSource && matchThreshold;
+        return matchSearch && matchLocation && matchMode && matchExp && matchSource && matchStatus && matchThreshold;
     });
 
     if (sort === 'latest') {
@@ -356,6 +368,13 @@ function createJobCard(job, isSaved) {
     const score = job.score || 0;
     const scoreColor = MatchingEngine.getScoreColor(score);
 
+    // Status Logic
+    const statusData = getJobStatus(job.id);
+    const currentStatus = statusData.status;
+    const statusClass = currentStatus === 'Applied' ? 'applied' :
+        currentStatus === 'Rejected' ? 'rejected' :
+            currentStatus === 'Selected' ? 'selected' : '';
+
     card.innerHTML = `
         <div class="job-header">
             <div>
@@ -377,7 +396,13 @@ function createJobCard(job, isSaved) {
 
         <div class="job-footer">
             <span class="posted-date">${posted}</span>
-            <div class="card-actions">
+            <div class="card-actions" style="align-items: center;">
+                <select class="status-select ${statusClass}" onchange="updateJobStatus(${job.id}, this.value)">
+                    <option value="Not Applied" ${currentStatus === 'Not Applied' ? 'selected' : ''}>Not Applied</option>
+                    <option value="Applied" ${currentStatus === 'Applied' ? 'selected' : ''}>Applied</option>
+                    <option value="Rejected" ${currentStatus === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                    <option value="Selected" ${currentStatus === 'Selected' ? 'selected' : ''}>Selected</option>
+                </select>
                 <button class="btn btn-secondary btn-sm" onclick="openJobModal(${job.id})">View</button>
                 <button class="btn btn-secondary btn-sm" onclick="window.open('${job.applyUrl}', '_blank')">Apply</button>
                 <button id="btn-save-${job.id}" class="btn ${isSaved ? 'btn-primary' : 'btn-secondary'} btn-sm" onclick="toggleSave(${job.id})">
@@ -388,6 +413,60 @@ function createJobCard(job, isSaved) {
     `;
     return card;
 }
+
+// Status Tracking Logic
+window.getJobStatus = function (jobId) {
+    const statusMap = JSON.parse(localStorage.getItem('jobTrackerStatus') || '{}');
+    return statusMap[jobId] || { status: 'Not Applied', timestamp: null };
+};
+
+window.updateJobStatus = function (jobId, newStatus) {
+    const statusMap = JSON.parse(localStorage.getItem('jobTrackerStatus') || '{}');
+
+    statusMap[jobId] = {
+        status: newStatus,
+        timestamp: new Date().toISOString()
+    };
+
+    localStorage.setItem('jobTrackerStatus', JSON.stringify(statusMap));
+
+    // Visual Feedback
+    showToast(`Status updated to ${newStatus}`);
+
+    // Re-render to update badge colors (if needed, or just let CSS handle it via class toggle which we'd need to do manually to avoid full re-render flicker)
+    // For now, let's just update the select class manually to avoid losing focus
+    const select = document.querySelector(`.status-select[onchange="updateJobStatus(${jobId}, this.value)"]`);
+    if (select) {
+        select.className = 'status-select'; // Reset
+        if (newStatus === 'Applied') select.classList.add('applied');
+        if (newStatus === 'Rejected') select.classList.add('rejected');
+        if (newStatus === 'Selected') select.classList.add('selected');
+    }
+};
+
+window.showToast = function (msg) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = msg;
+    container.appendChild(toast);
+
+    // Trigger reflow
+    void toast.offsetWidth;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+};
 
 function renderSavedJobs() {
     const container = document.getElementById('saved-job-list');
@@ -630,6 +709,8 @@ window.renderDigestUI = function (container, jobs, dateStr) {
             ${jobRows}
         </div>
 
+        ${renderStatusHistory()}
+
         <div class="digest-footer">
             <p>This digest was generated based on your preferences.</p>
             <p>Job Notification Tracker • <a href="#/settings">Update Preferences</a></p>
@@ -641,6 +722,37 @@ window.renderDigestUI = function (container, jobs, dateStr) {
     </div>
 `;
 };
+
+function renderStatusHistory() {
+    const statusMap = JSON.parse(localStorage.getItem('jobTrackerStatus') || '{}');
+    const updates = Object.entries(statusMap)
+        .map(([id, data]) => {
+            const job = JOBS_DATA.find(j => j.id == id);
+            return job ? { ...data, job } : null;
+        })
+        .filter(item => item && item.status !== 'Not Applied')
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 5);
+
+    if (updates.length === 0) return '';
+
+    const rows = updates.map(update => `
+        <div class="status-history-item">
+            <strong>${update.job.title}</strong> at ${update.job.company}
+            <div style="margin-top: 2px;">
+                <span class="match-badge" style="background: #eee; color: #333;">${update.status}</span>
+                <span class="status-history-date">${new Date(update.timestamp).toLocaleDateString()}</span>
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #eee;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px;">Recent Status Updates</h3>
+            ${rows}
+        </div>
+    `;
+}
 
 window.copyDigest = function () {
     const digestText = document.getElementById('digest-content').innerText;
