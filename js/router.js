@@ -81,6 +81,7 @@ function renderRoute() {
                                 <option value="Selected">Selected</option>
                                 <option value="Not Applied">Not Applied</option>
                             </select>
+                            <button class="btn btn-secondary btn-sm" onclick="clearFilters()" style="margin-left: 8px;">✕ Clear</button>
                         </div>
                     </div>
 
@@ -281,6 +282,17 @@ window.savePreferences = function (event) {
 };
 
 // Filter Logic Updated
+window.clearFilters = function () {
+    document.getElementById('filter-search').value = '';
+    document.getElementById('filter-location').value = '';
+    document.getElementById('filter-mode').value = '';
+    document.getElementById('filter-exp').value = '';
+    document.getElementById('filter-source').value = '';
+    document.getElementById('filter-status').value = '';
+    document.getElementById('toggle-match').checked = false; // Optional: reset toggle too? User said "Clear All". Checks imply yes.
+    applyFilters();
+};
+
 window.applyFilters = function () {
     const search = document.getElementById('filter-search').value.toLowerCase();
     const location = document.getElementById('filter-location').value;
@@ -339,7 +351,7 @@ window.applyFilters = function () {
     }
 
     if (filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state" style="padding: 40px;"><h3>No matching jobs found.</h3><p>Try adjusting your filters or lower your match threshold.</p></div>`;
+        container.innerHTML = `<div class="empty-state" style="padding: 40px;"><h3>No matching jobs found.</h3><p>Try adjusting your filters or lower your match threshold.</p><button class="btn btn-secondary" style="margin-top:16px" onclick="clearFilters()">Clear Filters</button></div>`;
         return;
     }
 
