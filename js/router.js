@@ -10,6 +10,8 @@ const routes = {
     '/digest': { title: 'Daily Digest', template: 'digest' },
     '/settings': { title: 'Preferences', template: 'settings' },
     '/proof': { title: 'Proof', template: 'proof' },
+    '/jt/07-test': { title: 'Test Checklist', template: 'test-checklist' },
+    '/jt/08-ship': { title: 'Ready to Ship', template: 'ship' },
     '404': { title: 'Page Not Found', template: 'error' }
 };
 
@@ -97,6 +99,11 @@ function renderRoute() {
                     <!-- Job Cards Container -->
                     <div id="job-list"></div>
                     
+                    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; border-top: 1px dashed #eee; padding-top: 20px;">
+                        <a href="#/jt/07-test" style="color: #ccc; text-decoration: none; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px;">
+                            <span>⚙️</span> Verify System Status
+                        </a>
+                    </div>
                  </div>
             </div>
         `;
@@ -236,6 +243,146 @@ function renderRoute() {
         `;
         return;
     }
+
+    if (route.template === 'test-checklist') {
+        renderTestChecklist(app);
+        return;
+    }
+
+    if (route.template === 'ship') {
+        renderShip(app);
+        return;
+    }
+}
+
+// ==========================================
+// TEST CHECKLIST LOGIC
+// ==========================================
+
+const CHECKLIST_ITEMS = [
+    { id: 'pref-persist', label: 'Preferences persist after refresh', tip: 'Reload page, check Settings.' },
+    { id: 'match-calc', label: 'Match score calculates correctly', tip: 'Check a job card score vs preferences.' },
+    { id: 'match-toggle', label: '"Show only matches" toggle works', tip: 'Enable toggle, low scores should vanish.' },
+    { id: 'save-persist', label: 'Save job persists after refresh', tip: 'Save a job, reload, check Saved tab.' },
+    { id: 'apply-tab', label: 'Apply opens in new tab', tip: 'Click Apply, check browser tabs.' },
+    { id: 'status-persist', label: 'Status update persists after refresh', tip: 'Change status, reload, verify.' },
+    { id: 'status-filter', label: 'Status filter works correctly', tip: 'Filter by Applied, check results.' },
+    { id: 'digest-gen', label: 'Digest generates top 10 by score', tip: 'Generate digest, count items.' },
+    { id: 'digest-persist', label: 'Digest persists for the day', tip: 'Reload /digest, should be same.' },
+    { id: 'no-errors', label: 'No console errors on main pages', tip: 'F12 > Console > Navigate routes.' }
+];
+
+function renderTestChecklist(container) {
+    const testStatus = JSON.parse(localStorage.getItem('jobTrackerTestStatus') || '{}');
+    const passedCount = CHECKLIST_ITEMS.filter(item => testStatus[item.id]).length;
+    const total = CHECKLIST_ITEMS.length;
+    const isComplete = passedCount === total;
+
+    const listHtml = CHECKLIST_ITEMS.map(item => {
+        const isChecked = testStatus[item.id] ? 'checked' : '';
+        return `
+            <div class="checklist-item" style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-bottom: 1px solid #eee;">
+                <input type="checkbox" id="${item.id}" ${isChecked} onchange="updateTestStatus('${item.id}', this.checked)" style="margin-top: 4px; transform: scale(1.2); cursor: pointer;">
+                <div>
+                    <label for="${item.id}" style="font-weight: 500; display: block; cursor: pointer;">${item.label}</label>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 2px;">Use case: ${item.tip}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <section class="context-header">
+            <h1>Pre-Flight Checklist</h1>
+            <p>Verify system integrity before shipping.</p>
+        </section>
+        <div class="workspace-wrapper">
+            <div class="primary-workspace">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Verification Status</span>
+                        <span class="tag ${isComplete ? 'source' : ''}" style="background: ${isComplete ? '#e6f4ea' : '#fce8e6'}; color: ${isComplete ? '#188038' : '#d93025'}; font-size: 0.9rem;">
+                            ${passedCount} / ${total} Passed
+                        </span>
+                    </div>
+                    
+                    <div style="padding: 0;">
+                        ${listHtml}
+                    </div>
+
+                    <div style="padding: 24px; text-align: center; border-top: 1px solid #eee; background: #fafafa;">
+                        ${isComplete
+            ? `<a href="#/jt/08-ship" class="btn btn-primary" style="width: 100%; display: block; text-align: center;">🚀 Proceed to Ship</a>`
+            : `<button class="btn btn-secondary" disabled style="width: 100%; opacity: 0.5; cursor: not-allowed;">Resolve all issues to unlock shipping</button>`
+        }
+                        <div style="margin-top: 16px;">
+                            <button class="btn btn-secondary btn-sm" onclick="resetTestStatus()">Reset Test Status</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.updateTestStatus = function (id, isChecked) {
+    const testStatus = JSON.parse(localStorage.getItem('jobTrackerTestStatus') || '{}');
+    testStatus[id] = isChecked;
+    localStorage.setItem('jobTrackerTestStatus', JSON.stringify(testStatus));
+
+    // Re-render to update progress bar and button state
+    renderTestChecklist(document.getElementById('app'));
+};
+
+window.resetTestStatus = function () {
+    if (confirm('Reset all verification progress?')) {
+        localStorage.removeItem('jobTrackerTestStatus');
+        renderTestChecklist(document.getElementById('app'));
+    }
+};
+
+function renderShip(container) {
+    const testStatus = JSON.parse(localStorage.getItem('jobTrackerTestStatus') || '{}');
+    const passedCount = CHECKLIST_ITEMS.filter(item => testStatus[item.id]).length;
+    const total = CHECKLIST_ITEMS.length;
+
+    if (passedCount < total) {
+        container.innerHTML = `
+            <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+                <div style="font-size: 4rem; margin-bottom: 24px;">🔒</div>
+                <h1>Deployment Locked</h1>
+                <p style="color: #666; max-width: 400px; margin-bottom: 32px;">
+                    You must verify all ${total} items in the checklist before you can ship this build.
+                </p>
+                <a href="#/jt/07-test" class="btn btn-primary">Return to Checklist</a>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <section class="context-header">
+            <h1>Ready for Takeoff 🚀</h1>
+            <p>All systems verified. You are clear to launch.</p>
+        </section>
+        <div class="workspace-wrapper">
+            <div class="primary-workspace">
+                <div class="card" style="text-align: center; padding: 48px 24px;">
+                    <div style="font-size: 4rem; margin-bottom: 24px;">✅</div>
+                    <h2>Quality Gate Passed</h2>
+                    <p style="color: #666; max-width: 500px; margin: 0 auto 32px auto;">
+                        Great job! You have verified that the Job Notification Tracker meets all requirements.
+                        The system handles edge cases, persists data, and delivers a premium user experience.
+                    </p>
+                    <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; display: inline-block; text-align: left; font-family: monospace; font-size: 0.9rem;">
+                        git add .<br>
+                        git commit -m "chore: Ready for release v1.0"<br>
+                        git push origin master
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Preferences Logic
