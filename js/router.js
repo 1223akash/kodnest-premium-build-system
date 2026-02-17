@@ -9,7 +9,7 @@ const routes = {
     '/saved': { title: 'Saved Jobs', template: 'saved' },
     '/digest': { title: 'Daily Digest', template: 'digest' },
     '/settings': { title: 'Preferences', template: 'settings' },
-    '/proof': { title: 'Proof', template: 'proof' },
+    '/jt/proof': { title: 'Proof', template: 'proof' },
     '/jt/07-test': { title: 'Test Checklist', template: 'test-checklist' },
     '/jt/08-ship': { title: 'Ready to Ship', template: 'ship' },
     '404': { title: 'Page Not Found', template: 'error' }
