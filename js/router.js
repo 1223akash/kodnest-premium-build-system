@@ -214,20 +214,7 @@ function renderRoute() {
     }
 
     if (route.template === 'proof') {
-        app.innerHTML = `
-             <section class="context-header">
-                <h1>Proof</h1>
-                <p>Artifact collection.</p>
-            </section>
-            <div class="workspace-wrapper">
-                 <div class="primary-workspace">
-                    <div class="card empty-state">
-                        <h3>Artifact Collection</h3>
-                        <p>Placeholder for future proofs.</p>
-                    </div>
-                 </div>
-            </div>
-        `;
+        renderProof(app);
         return;
     }
 
@@ -379,11 +366,153 @@ function renderShip(container) {
                         git commit -m "chore: Ready for release v1.0"<br>
                         git push origin master
                     </div>
+                    
+                    <div style="margin-top: 32px;">
+                        <a href="#/jt/proof" class="btn btn-primary" style="padding: 12px 24px;">Go to Submission Page 🏁</a>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
+
+// ==========================================
+// PROOF & SUBMISSION LOGIC
+// ==========================================
+
+function renderProof(container) {
+    const proofData = JSON.parse(localStorage.getItem('jobTrackerProof') || '{"lovable":"", "github":"", "deploy":""}');
+    const testStatus = JSON.parse(localStorage.getItem('jobTrackerTestStatus') || '{}');
+    const testPassedCount = Object.values(testStatus).filter(Boolean).length;
+    const isTestComplete = testPassedCount === 10;
+
+    const isLinksComplete = proofData.lovable && proofData.github && proofData.deploy;
+    const isShipped = isTestComplete && isLinksComplete;
+
+    const milestones = [
+        { label: 'Foundation Setup', status: 'Completed' },
+        { label: 'Layout Implementation', status: 'Completed' },
+        { label: 'Component Implementation', status: 'Completed' },
+        { label: 'Job Notification Tracker Skeleton', status: 'Completed' },
+        { label: 'UI Views & Routing', status: 'Completed' },
+        { label: 'Real Data & Persistence', status: 'Completed' },
+        { label: 'Matching & Digest Engines', status: 'Completed' },
+        { label: 'Status Tracking & Tests', status: isTestComplete ? 'Completed' : 'Pending' }
+    ];
+
+    const milestoneHtml = milestones.map(m => `
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem;">
+            <span>${m.label}</span>
+            <span class="tag ${m.status === 'Completed' ? 'success' : ''}">${m.status}</span>
+        </div>
+    `).join('');
+
+    container.innerHTML = `
+        <section class="context-header">
+            <h1>Project Submission</h1>
+            <p>Finalize your artifacts and verify shipment.</p>
+        </section>
+        <div class="workspace-wrapper">
+            <div class="primary-workspace">
+                
+                <!-- Status Card -->
+                <div class="card" style="margin-bottom: 24px; border-left: 4px solid ${isShipped ? '#188038' : '#ea8600'};">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Project Status</span>
+                        <span class="tag ${isShipped ? 'source' : ''}" style="font-size: 1rem; padding: 6px 12px; background: ${isShipped ? '#e6f4ea' : '#fff8e1'}; color: ${isShipped ? '#188038' : '#b06000'};">
+                            ${isShipped ? '🚀 SHIPPED' : '🚧 IN PROGRESS'}
+                        </span>
+                    </div>
+                    <p style="margin-top: 8px; color: #666;">
+                        ${isShipped
+            ? 'Project 1 Shipped Successfully. You are ready to submit.'
+            : 'Complete the checklist and provide all links to ship this project.'}
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    
+                    <!-- Milestones -->
+                    <div class="card">
+                        <div class="card-header">Step Completion Summary</div>
+                        <div style="margin-top: 16px;">
+                            ${milestoneHtml}
+                        </div>
+                    </div>
+
+                    <!-- Artifacts -->
+                    <div class="card">
+                        <div class="card-header">Artifact Collection</div>
+                        <form onsubmit="saveProof(event)" style="margin-top: 16px;">
+                            
+                            <div class="input-group">
+                                <label class="input-label">Lovable Project Link</label>
+                                <input type="url" id="proof-lovable" class="input-field" placeholder="https://lovable.dev/..." value="${proofData.lovable}" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">GitHub Repository Link</label>
+                                <input type="url" id="proof-github" class="input-field" placeholder="https://github.com/..." value="${proofData.github}" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Deployed URL (Vercel/Netlify)</label>
+                                <input type="url" id="proof-deploy" class="input-field" placeholder="https://....vercel.app" value="${proofData.deploy}" required>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <button type="submit" class="btn btn-primary">Save Artifacts</button>
+                            </div>
+                        </form>
+
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px dashed #eee;">
+                            <button class="btn btn-secondary" style="width: 100%;" onclick="copySubmission()" ${isShipped ? '' : 'disabled'}>
+                                📋 Copy Final Submission
+                            </button>
+                            ${!isShipped ? '<p style="font-size: 0.8rem; color: #999; text-align: center; margin-top: 8px;">Ship project to enable export.</p>' : ''}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.saveProof = function (e) {
+    e.preventDefault();
+    const proofData = {
+        lovable: document.getElementById('proof-lovable').value,
+        github: document.getElementById('proof-github').value,
+        deploy: document.getElementById('proof-deploy').value
+    };
+    localStorage.setItem('jobTrackerProof', JSON.stringify(proofData));
+    renderProof(document.getElementById('app'));
+    showToast("Artifacts saved successfully.");
+};
+
+window.copySubmission = function () {
+    const proofData = JSON.parse(localStorage.getItem('jobTrackerProof'));
+    const text = `
+Job Notification Tracker — Final Submission
+
+Lovable Project:
+${proofData.lovable}
+
+GitHub Repository:
+${proofData.github}
+
+Live Deployment:
+${proofData.deploy}
+
+Core Features:
+- Intelligent match scoring
+- Daily digest simulation
+- Status tracking
+- Test checklist enforced
+`;
+    navigator.clipboard.writeText(text.trim()).then(() => showToast("Submission copied to clipboard!"));
+};
 
 // Preferences Logic
 window.loadPreferences = function () {
